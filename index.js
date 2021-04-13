@@ -31,9 +31,13 @@
             let pcPassiveUpgs = [];
             const pcPassiveUpgCount = 1;
 
-            let pcPassiveCosts = [
+            let pcPassiveBaseCosts = [
                 10
             ];
+
+            let pcPassiveMults = [
+                1+1/3
+            ]
 
             const pcPassivePowers = [
                 1
@@ -126,7 +130,7 @@ function Tick() {
         setInterval(() => {
             pogAmt += pcPassivePowers[i];
             UpdatePogchampsTxt();
-        },1000 / pcPassiveLevels[i]);
+        },1000 / (pcPassiveLevels[i] * pcPassivePowers[i]));
     }
 }
 
@@ -141,7 +145,7 @@ function Click() {
 }
 
 function Upgrade(type,number) {
-    let upgradeCost = GetUpgradeCost(0,0);
+    let upgradeCost = Math.floor(GetUpgradeCost(0,0));
     if (upgradeCost != null || upgradeCost != undefined) {
         if (pogAmt >= upgradeCost) {
             // Can buy upgrade
@@ -157,7 +161,8 @@ function Upgrade(type,number) {
 function GetUpgradeCost(type, number) {
     if (type === 0) {
         // Passive upgrade
-        return pcPassiveCosts[number];
+        // return pcPassiveBaseCosts[number];
+        return pcPassiveBaseCosts[number] * Math.pow(pcPassiveMults[number], pcPassiveLevels[number])
     }
 }
 
@@ -177,7 +182,7 @@ function InitializeUpgBtns() {
 
         upgData = [
             pcPassivePowers[i],
-            pcPassiveCosts[i],
+            pcPassiveBaseCosts[i],
             pcPassiveLevels[i]
         ];
 
@@ -189,6 +194,7 @@ function InitializeUpgBtns() {
 
         upgBtn.type = "button";
         upgBtn.classList.add("button");
+        upgBtn.id = `passivebtn0-${i}`;
         upgBtn.value = `Cost: ${upgData[1]}`;
 
         upgradeLabel.innerHTML = `+${upgData[0]} pogchamp${(upgData[0] === 1) ? "" : "s"}/s (Lvl ${upgData[2]})`;
@@ -216,18 +222,26 @@ function UpdateUpgradeUI(type) {
     if (type === 0) {
         for (let i = 0; i < pcPassiveLevels.length; i++) {
             let upgradeLabel = document.querySelector(`p#passiveupg0-${i}`);
+            let upgradeBtn = document.querySelector(`input#passivebtn0-${i}`);
 
             // upgradeLabel.innerHTML = `+${upgData[0]} pogchamp${(upgData[0] === 1) ? "" : "s"}/s (Lvl ${upgData[2]})`;
             UpdateText(
                 upgradeLabel,
                 `+${pcPassivePowers[0]} pogchamp${(pcPassivePowers[0] === 1) ? "" : "s"}/s (Lvl ${pcPassiveLevels[i]})`
             );
+
+            upgradeBtn.value = `Cost: ${Math.floor(GetUpgradeCost(0,0))}`;
         }
     }
 }
 
 function UpdatePogchampsTxt(amt=pogAmt) {
-    UpdateText(pogchampsTxt, `${amt} pogchamps`);
+    let pcPerSec = 0;
+    for (let i = 0; i < pcPassiveLevels.length; i++) {
+        pcPerSec += (pcPassiveLevels[i] * pcPassivePowers[i]);
+    }
+    
+    UpdateText(pogchampsTxt, `${amt} pogchamps ${(pcPerSec !== 0) ? `(${pcPerSec}/s)` : ""}`);
 }
 
 function UpdateText(text, value) {
