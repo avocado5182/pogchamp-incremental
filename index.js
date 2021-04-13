@@ -3,7 +3,7 @@
     // #region UI Variables
 
     // Texts
-        const pogchampsTxt = document.querySelector("#pogchamp-txt");
+    const pogchampsTxt = document.querySelector("#pogchamp-txt");
 
     // Buttons
         const getPogchampsBtn = document.querySelector("#pc-getbtn");
@@ -215,7 +215,8 @@ function UpdateUI() {
 function UpdateUpgradeUI(type) {
     if (type === 0) {
         for (let i = 0; i < pcPassiveLevels.length; i++) {
-            let upgradeLabel = document.querySelector(`#passiveupg0-${i}`);
+            let upgradeLabel = document.querySelector(`p#passiveupg0-${i}`);
+
             // upgradeLabel.innerHTML = `+${upgData[0]} pogchamp${(upgData[0] === 1) ? "" : "s"}/s (Lvl ${upgData[2]})`;
             UpdateText(
                 upgradeLabel,
