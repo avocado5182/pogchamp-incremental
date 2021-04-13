@@ -214,7 +214,7 @@ function UpdateUI() {
 
 function UpdateUpgradeUI(type) {
     if (type === 0) {
-        for (let i = 0; i < pcPassiveLevels; i++) {
+        for (let i = 0; i < pcPassiveLevels.length; i++) {
             let upgradeLabel = document.querySelector(`#passiveupg0-${i}`);
             // upgradeLabel.innerHTML = `+${upgData[0]} pogchamp${(upgData[0] === 1) ? "" : "s"}/s (Lvl ${upgData[2]})`;
             UpdateText(
