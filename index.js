@@ -94,7 +94,8 @@ function SaveData() {
     }));
     localStorage.setItem("data_passives", JSON.stringify({
         levels: pcPassiveLevels,
-        starteds: pcPassiveStartedBools
+        starteds: pcPassiveStartedBools,
+        intervals: pcPassiveIntervals
     }));
     console.log("Data saved!");
 }
@@ -116,7 +117,8 @@ function LoadData(debug=false) {
     if (!passives) {
         passives = {
             levels: [0,0],
-            starteds: [false,false]
+            starteds: [false,false],
+            intervals: []
         };
     }
 
@@ -125,6 +127,7 @@ function LoadData(debug=false) {
 
     pcPassiveLevels = passives.levels;
     pcPassiveStartedBools = passives.starteds;
+    pcPassiveIntervals = passives.intervals;
     
     UpdateUI();
     
