@@ -29,27 +29,32 @@
         
         // Passive Pogchamps
             let pcPassiveUpgs = [];
-            const pcPassiveUpgCount = 1;
+            const pcPassiveUpgCount = 2;
 
             let pcPassiveBaseCosts = [
-                10
+                10,
+                100
             ];
 
             let pcPassiveMults = [
-                1+1/3
+                1+1/3,
+                1+1/4
             ]
 
             const pcPassivePowers = [
-                1
+                1,
+                10
             ];
 
             let pcPassiveLevels = [];
 
             let pcPassiveBools = [
+                false,
                 false
             ];
 
             let pcPassiveStartedBools = [
+                false,
                 false
             ];
 
@@ -96,7 +101,7 @@ function SaveData() {
 
 function LoadData(debug=false) {
     console.log("Loading data...");
-    
+
     // localStorage.clear();
     let currencies = JSON.parse(localStorage.getItem("data_currencies"));
     let passives = JSON.parse(localStorage.getItem("data_passives"));
@@ -157,7 +162,7 @@ function Click() {
 
 function Upgrade(type,number) {
     if (type === 0) {
-        let upgradeCost = Math.floor(GetUpgradeCost(0,0));
+        let upgradeCost = Math.floor(GetUpgradeCost(type,number));
         if (upgradeCost != null || upgradeCost != undefined) {
             if (pogAmt >= upgradeCost) {
                 // Can buy upgrade
@@ -191,11 +196,6 @@ function AddPogchamps(amt) {
 
 function InitializeUpgBtns() {
     for (let i = 0; i < pcPassiveUpgCount; i++) {
-        // <div class="upgrade">
-        //     <p class="upgradelabel">+1 pogchamp/s</p>
-        //     <input type="button" class="button" value="Cost: 10"></input>
-        // </div>
-
         upgData = [
             pcPassivePowers[i],
             pcPassiveBaseCosts[i],
@@ -243,10 +243,10 @@ function UpdateUpgradeUI(type) {
             // upgradeLabel.innerHTML = `+${upgData[0]} pogchamp${(upgData[0] === 1) ? "" : "s"}/s (Lvl ${upgData[2]})`;
             UpdateText(
                 upgradeLabel,
-                `+${pcPassivePowers[0]} pogchamp${(pcPassivePowers[0] === 1) ? "" : "s"}/s (Lvl ${pcPassiveLevels[i]})`
+                `+${pcPassivePowers[i]} pogchamp${(pcPassivePowers[i] === 1) ? "" : "s"}/s (Lvl ${pcPassiveLevels[i]})`
             );
 
-            upgradeBtn.value = `Cost: ${Math.floor(GetUpgradeCost(0,0))}`;
+            upgradeBtn.value = `Cost: ${Math.floor(GetUpgradeCost(type,i))}`;
         }
     }
 }
