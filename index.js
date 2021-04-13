@@ -52,6 +52,8 @@
             let pcPassiveStartedBools = [
                 false
             ];
+
+            let pcPassiveIntervals = [];
         
     // #endregion
 
@@ -86,14 +88,16 @@ function SaveData() {
         poggiveamount: pogGiveAmt,
     }));
     localStorage.setItem("data_passives", JSON.stringify({
-        levels: pcPassiveLevels
+        levels: pcPassiveLevels,
+        starteds: pcPassiveStartedBools
     }));
     console.log("Data saved!");
 }
 
 function LoadData(debug=false) {
     console.log("Loading data...");
-    let data = [];
+    
+    // localStorage.clear();
     let currencies = JSON.parse(localStorage.getItem("data_currencies"));
     let passives = JSON.parse(localStorage.getItem("data_passives"));
 
@@ -106,7 +110,8 @@ function LoadData(debug=false) {
     
     if (!passives) {
         passives = {
-            levels: [0]
+            levels: [0],
+            starteds: [false]
         };
     }
 
@@ -114,6 +119,7 @@ function LoadData(debug=false) {
     pogGiveAmt = currencies.poggiveamount;
 
     pcPassiveLevels = passives.levels;
+    pcPassiveStartedBools = passives.starteds;
     
     UpdateUI();
     
@@ -124,13 +130,18 @@ function LoadData(debug=false) {
 
 function Tick() {
     // Handle passives
-    for (let i = 0; i < pcPassiveStartedBools.length; i++) {
-        if (pcPassiveStartedBools[i]) continue;
-        pcPassiveStartedBools[i] = true;
-        setInterval(() => {
-            pogAmt += pcPassivePowers[i];
-            UpdatePogchampsTxt();
-        },1000 / (pcPassiveLevels[i] * pcPassivePowers[i]));
+    for (let i = 0; i < pcPassiveLevels.length; i++) {
+        // Stupid stupid stupid stupid stupid stupid stupid stupid stupid stupid 
+        if (pcPassiveStartedBools[i] === false) {
+            if (pcPassiveLevels[i] !== 0) {
+                pcPassiveStartedBools[i] = true;
+                let interval = setInterval(() => {
+                    pogAmt += pcPassivePowers[i];
+                    UpdatePogchampsTxt();
+                },1000 / (pcPassiveLevels[i] * pcPassivePowers[i]));
+                pcPassiveIntervals.push(interval);
+            } 
+        }
     }
 }
 
@@ -145,16 +156,21 @@ function Click() {
 }
 
 function Upgrade(type,number) {
-    let upgradeCost = Math.floor(GetUpgradeCost(0,0));
-    if (upgradeCost != null || upgradeCost != undefined) {
-        if (pogAmt >= upgradeCost) {
-            // Can buy upgrade
-            pogAmt -= upgradeCost;
-            pcPassiveLevels[number]++;
-            UpdateUI();
+    if (type === 0) {
+        let upgradeCost = Math.floor(GetUpgradeCost(0,0));
+        if (upgradeCost != null || upgradeCost != undefined) {
+            if (pogAmt >= upgradeCost) {
+                // Can buy upgrade
+                pogAmt -= upgradeCost;
+                pcPassiveLevels[number]++;
+                clearInterval(pcPassiveIntervals.pop());
+                pcPassiveStartedBools[number] = false;
+                Tick();
+                UpdateUI();
+            }
+        } else {
+            console.trace(`Seems like upgrade (${type},${number}) failed with getting upgrade cost. :/`);
         }
-    } else {
-        console.trace(`Seems like upgrade (${type},${number}) failed with getting upgrade cost. :/`);
     }
 }
 
