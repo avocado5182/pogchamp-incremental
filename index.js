@@ -115,8 +115,8 @@ function LoadData(debug=false) {
     
     if (!passives) {
         passives = {
-            levels: [0],
-            starteds: [false]
+            levels: [0,0],
+            starteds: [false,false]
         };
     }
 
